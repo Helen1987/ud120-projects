@@ -1,5 +1,5 @@
 #!/usr/bin/python
-
+import numpy as np
 
 def outlierCleaner(predictions, ages, net_worths):
     """
@@ -14,7 +14,13 @@ def outlierCleaner(predictions, ages, net_worths):
     cleaned_data = []
 
     ### your code goes here
+    error = np.absolute(predictions - net_worths).flatten()
 
-    
+    fullsize = len(predictions)
+    newSize = fullsize*0.9
+
+    minIndexes = error.argsort()[0:int(newSize - 1)]
+    cleaned_data = [(ages[i], net_worths[i], error[i]) for i in minIndexes]
+
     return cleaned_data
 
