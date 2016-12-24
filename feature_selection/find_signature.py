@@ -2,6 +2,9 @@
 
 import pickle
 import numpy
+from sklearn import tree
+from sklearn.metrics import accuracy_score
+
 numpy.random.seed(42)
 
 
@@ -39,5 +42,16 @@ labels_train   = labels_train[:150]
 
 ### your code goes here
 
+clf = tree.DecisionTreeClassifier()
+clf = clf.fit(features_train, labels_train)
 
+print "accuracy is", clf.score(features_test, labels_test)
 
+print "the most importan features are:"
+print [(ind, importance) for ind, importance in enumerate(clf.feature_importances_) if importance > 0.2]
+
+features = vectorizer.get_feature_names()
+
+#print "the most important feature is", features[33614]
+#print "the most important feature is", features[14343]
+print "the most important feature is", features[21323]

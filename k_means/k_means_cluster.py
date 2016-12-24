@@ -52,35 +52,49 @@ feature_2 = "exercised_stock_options"
 feature_3 = "total_payments"
 poi  = "poi"
 
-stocks = [person[feature_2] for person in data_dict.values() if person[feature_2] != "NaN"]
-print "min stock is", min(stocks)
-print "max stock is", max(stocks)
-stocks = [person[feature_1] for person in data_dict.values() if person[feature_1] != "NaN"]
-print "min stock is", min(stocks)
-print "max stock is", max(stocks)
-
-features_list = [poi, feature_1, feature_2, feature_3]
+features_list = [poi, feature_1, feature_2]#, feature_3]
 data = featureFormat(data_dict, features_list )
 poi, finance_features = targetFeatureSplit( data )
 
 
+stocks = [person[feature_2] for person in data_dict.values() if person[feature_2] != "NaN"]
+minStocks = float(min(stocks))
+print "min stock is", minStocks
+maxStocks = float(max(stocks))
+print "max stock is", maxStocks
+
+salaries = [person[feature_1] for person in data_dict.values() if person[feature_1] != "NaN"]
+minSalaries = float(min(salaries))
+print "min stock is", minSalaries
+maxSalaries = float(max(salaries))
+print "max stock is", maxSalaries
+
+
+scaled_features = (finance_features-numpy.array([minSalaries, minStocks])) / (numpy.array([maxSalaries-minSalaries, maxStocks-minSalaries]))
+scaled_features[scaled_features < 0] = 0
+
+
+
+print "200000 salary now is", (200000.-minSalaries) / (maxSalaries - minSalaries)
+print "1 milion options now is", (1000000.-minStocks) / (maxStocks - minStocks)
+#print(finance_features)
 
 ### in the "clustering with 3 features" part of the mini-project,
 ### you'll want to change this line to 
 ### for f1, f2, _ in finance_features:
 ### (as it's currently written, the line below assumes 2 features)
-for f1, f2, _ in finance_features:
+for f1, f2 in scaled_features: #finance_features:
     plt.scatter( f1, f2 )
 plt.show()
 
 ### cluster here; create predictions of the cluster labels
 ### for the data and store them to a list called pred
 
-pred = KMeans(n_clusters=2, random_state=0).fit_predict(data)
+pred = KMeans(n_clusters=2, random_state=0).fit_predict(scaled_features)
 
 ### rename the "name" parameter when you change the number of features
 ### so that the figure gets saved to a different file
 try:
-    Draw(pred, finance_features, poi, mark_poi=False, name="clusters3.pdf", f1_name=feature_1, f2_name=feature_2)
+    Draw(pred, finance_features, poi, mark_poi=False, name="clusters2scaled.pdf", f1_name=feature_1, f2_name=feature_2)
 except NameError:
     print "no predictions object named pred found, no clusters to plot"
